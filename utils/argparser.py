@@ -4,6 +4,7 @@ from .log import * # Colorful output
 # Help texts, so the lines don't get too long
 HELP = {
     "gnn_layers": "Specify the number of GNN layers in model.",
+    "script_name": "Specify the name of the script used to run program.",
 }
 
 
@@ -48,6 +49,9 @@ def parse_args() -> argparse.Namespace:
                                      description="Parses your arguments TODO: CHANGE",
                                      epilog="Help TODO: CHANGE")
 
+    # General
+    parser.add_argument("--script_name", dest="script_name", action="store", type=str, default=None, help=HELP["script_name"])
+
     # Training environment arguments
 
     # Model arguments
@@ -60,4 +64,11 @@ def parse_args() -> argparse.Namespace:
     test(args, unknown_args)
     
     print_done("Arguments loaded.")
+    
+    # In case of script use, log it
+    if args.script_name is not None:
+        print_warning(f"This program has been run using following script: {args.script_name}")
+    
+    
+    # Returns passed arguments
     return args

@@ -60,7 +60,7 @@ def blue(text: str) -> str:
 
 def light_blue(text: str) -> str:
     """
-    Returns cyan text.
+    Returns light_blue text.
     
     Parameters
     ----------
@@ -75,6 +75,25 @@ def light_blue(text: str) -> str:
     assert isinstance(text, str), colored("Text must be a string.")
     
     return colored(text, "light_blue")
+
+
+def yellow(text: str) -> str:
+    """
+    Returns yellow text.
+    
+    Parameters
+    ----------
+    text : str
+        Text to be turned yellow.
+        
+    Returns
+    -------
+    _ : str
+        yellow text.
+    """
+    assert isinstance(text, str), colored("Text must be a string.")
+    
+    return colored(text, "yellow")
 
 
 COLOR_FUNCTIONS = {"red": red,
@@ -100,7 +119,7 @@ def print_done(text: str=None):
   
 def print_info(text: str=None):
     """
-    Prints blue text with an info symbol in front, to symbolize that certain process is done.
+    Prints blue text with an info symbol in front, to show some information.
     
     Parameters
     ----------
@@ -111,6 +130,20 @@ def print_info(text: str=None):
     assert isinstance(text, str), red("[PRINT_INFO] Text must be a string.")
 
     print(light_blue(f"[ℹ️] {text}"))
+    
+def print_warning(text: str=None):
+    """
+    Prints yellow text with an info symbol in front, to symbolize that certain process is done.
+    
+    Parameters
+    ----------
+    text : str
+        Text to be printed.
+    """
+    
+    assert isinstance(text, str), red("[PRINT_WARNING] Text must be a string.")
+
+    print(yellow(f"[⚠️] {text}"))
       
 
 def log(header: str=None, text: str=None, color: str=None):

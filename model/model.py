@@ -1,5 +1,5 @@
 import torch.nn as nn
-from utils.colored_text import *
+from utils.log import *
 
 class Model(nn.Module):
     def __init__(self, gnn_layers: int=1):
@@ -8,4 +8,4 @@ class Model(nn.Module):
         self.gnn_layers = gnn_layers
         
     def __str__(self):
-        return light_blue(f"[Model] with {self.gnn_layers} GNN layers")
+        return light_blue(f"Model with {self.gnn_layers} GNN layers")

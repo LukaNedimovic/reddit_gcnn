@@ -1,10 +1,9 @@
 import argparse # Parsing arguments
-from .colored_text import * # Colorful output
+from .log import * # Colorful output
 
 # Help texts, so the lines don't get too long
 HELP = {
     "gnn_layers": "Specify the number of GNN layers in model.",
-
 }
 
 
@@ -24,13 +23,15 @@ def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
     
     """
     
+    print_info("Starting argument testing.")
+    
     # No unknown arguments should be passed
     assert len(unknown_args) == 0, red("Unkown cmdline arguments passed.")
     
     # GNN layers must be present
     assert args.gnn_layers > 0, red("GNN layers number must be integer greater than 0.")
     
-    print(green("Tests successfully passed."))
+    print_done("Arguments testing finished.")
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,4 +59,5 @@ def parse_args() -> argparse.Namespace:
     # Assure the user passed arguments properly
     test(args, unknown_args)
     
+    print_done("Arguments loaded.")
     return args

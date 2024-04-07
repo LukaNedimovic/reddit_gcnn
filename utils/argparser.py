@@ -1,9 +1,10 @@
 import argparse # Parsing arguments
-from .colored_text import *
+from .colored_text import * # Colorful output
 
 # Help texts, so the lines don't get too long
 HELP = {
-    "gnn_layers": green("Specify the number of GNN layers in model.")
+    "gnn_layers": "Specify the number of GNN layers in model.",
+
 }
 
 

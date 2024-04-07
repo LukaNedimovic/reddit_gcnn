@@ -55,3 +55,21 @@ def blue(text: str) -> str:
     assert isinstance(text, str), colored("Text must be a string.")
     
     return colored(text, "blue")
+
+def light_blue(text: str) -> str:
+    """
+    Returns cyan text.
+    
+    Parameters
+    ----------
+    text : str
+        Text to be turned light_blue.
+        
+    Returns
+    -------
+    _ : str
+        light_blue text.
+    """
+    assert isinstance(text, str), colored("Text must be a string.")
+    
+    return colored(text, "light_blue")

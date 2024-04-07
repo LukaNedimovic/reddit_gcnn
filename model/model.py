@@ -8,4 +8,4 @@ class Model(nn.Module):
         self.gnn_layers = gnn_layers
         
     def __str__(self):
-        return blue(f"[Model] with {self.gnn_layers} GNN layers")
+        return light_blue(f"[Model] with {self.gnn_layers} GNN layers")

@@ -1,10 +1,13 @@
-import argparse # Parsing arguments
+import argparse    # Parsing arguments
 from .log import * # Colorful output
 
 # Help texts, so the lines don't get too long
 HELP = {
-    "gnn_layers": "Specify the number of GNN layers in model.",
-    "script_name": "Specify the name of the script used to run program.",
+    "script_name":    "Specify the name of the script used to run program.",
+    "epochs":         "Specify the number of epochs for the model to be trained.",
+    "learning_rate":  "Specify the learning rate used for training.",
+    "gcn_embed_dims": "Specify the embedding dimensions in each layer of GCNConv.",
+    "mlp_embed_dims": "Specify the embedding dimensions in each layer of MLP."
 }
 
 
@@ -29,9 +32,20 @@ def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
     # No unknown arguments should be passed
     assert len(unknown_args) == 0, red("Unkown cmdline arguments passed.")
     
-    # GNN layers must be present
-    assert args.gnn_layers > 0, red("GNN layers number must be integer greater than 0.")
-    
+    # GCN layers must be present and embedding dimensions must be natural numbers
+    assert len(args.gcn_embed_dims) > 0, red("GCN layers number must be integer greater than 0.")
+    for embed_dim in args.gcn_embed_dims:
+        assert embed_dim > 0, red("GCN layer embedding dimension must be greater than 0.")
+
+    # MLP layers must be present and embedding dimensions must be natural numbers
+    assert len(args.mlp_embed_dims) > 0, red("MLP layers number must be integer greater than 0.")
+    for embed_dim in args.mlp_embed_dims:
+        assert embed_dim > 0, red("MLP layer embedding dimension must be greater than 0.")
+
+    # First mlp layer handles 2 node representations, therefore its dimension is twice as big compared to GCN output's dimension
+    assert 2 * args.gcn_embed_dims[-1] == args.mlp_embed_dims[0], red(f"GCN output ({args.gcn_embed_dims[-1]}) and MLP input ({args.mlp_embed_dims[0]}) shape mismatch.")
+
+
     print_done("Arguments testing finished.")
 
 
@@ -53,9 +67,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--script_name", dest="script_name", action="store", type=str, default=None, help=HELP["script_name"])
 
     # Training environment arguments
+    parser.add_argument("--epochs",        dest="epochs",        action="store", type=int,   default=5,     help=HELP["epochs"])
+    parser.add_argument("--learning_rate", dest="learning_rate", action="store", type=float, default=0.001, help=HELP["learning_rate"])
 
     # Model arguments
-    parser.add_argument("--gnn_layers", dest="gnn_layers", action="store", type=int, default=1, help=HELP["gnn_layers"])
+    parser.add_argument("--gcn_embed_dims", nargs="*", type=int, default=[1, 1], help=HELP["gcn_embed_dims"])
+    parser.add_argument("--mlp_embed_dims", nargs="*", type=int, default=[1, 1], help=HELP["mlp_embed_dims"])
 
     # Parse arguments
     args, unknown_args = parser.parse_known_args()
@@ -67,8 +84,7 @@ def parse_args() -> argparse.Namespace:
     
     # In case of script use, log it
     if args.script_name is not None:
-        print_warning(f"This program has been run using following script: {args.script_name}")
-    
+        print_info(f"This program has been run using following script: {args.script_name}")
     
     # Returns passed arguments
     return args

@@ -1,7 +1,7 @@
 import networkx as nx
 
+import torch
 from torch_geometric.utils import from_networkx
-from torch_geometric.utils import to_networkx
 from torch_geometric       import seed_everything
 
 from torch_geometric.transforms import RandomLinkSplit
@@ -23,3 +23,6 @@ def load_data():
     train_data, val_data, test_data = split_transform(data)
     
     return (train_data, val_data, test_data)
+
+def load_gcn_model(gcn_model_path: str=None):
+    return torch.load(gcn_model_path)

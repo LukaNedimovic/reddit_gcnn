@@ -4,7 +4,7 @@ from utils.const import *
 from model.gcn_model import GCNModel
 
 from train.trainer import *
-from data.load_data import load_data
+from data.load_data import load_data, load_gcn_model
 
 if __name__ == "__main__":
     # Parse arguments from command line
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     gcn_model  = None
     qgcn_model = None
 
-    if True: # TODO -> argparse whether model should be trained
+    if args.train_gcn:
         # Load Zachary's Karate Club Dataset
         data = load_data()
         
@@ -29,3 +29,8 @@ if __name__ == "__main__":
         train_gcn_model(gcn_model=gcn_model,
                         data=data,
                         settings=training_settings)
+
+    elif args.load_gcn:
+        print_done(f"Staring model load: {args.gcn_path}")        
+        gcn_model = load_gcn_model(args.gcn_path)
+        print_done(f"Successfully loaded model: {args.gcn_path}")

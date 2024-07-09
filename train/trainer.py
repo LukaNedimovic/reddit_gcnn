@@ -25,7 +25,7 @@ def train_gcn_model(gcn_model=None,
     train_data, val_data, test_data = data
     
     # Extract general training settings
-    epochs, learning_rate, device = (settings[key] for key in settings)
+    epochs, learning_rate, gcn_path, device = (settings[key] for key in settings)
 
     # Initialize a random initial embedding
     train_data.x = torch.rand(gcn_model.num_nodes, gcn_model.gcn_embed_dims[0], 
@@ -79,6 +79,12 @@ def train_gcn_model(gcn_model=None,
             bar.update(epoch)
 
     print_done("Model training has been finished.")
+
     # Training is finished. Test the model on the test data.
     test_auc = eval_gcn_model(gcn_model, train_data.x, test_data)
     print_info(f"Test AUC: {test_auc:.2f}")
+
+    # Save the model on disk
+    print_info(f"Saving the model...")
+    torch.save(gcn_model, gcn_path)
+    print_info(f"Model successfully saved.")

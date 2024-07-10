@@ -6,8 +6,10 @@ HELP = {
     "script_name":    "Specify the name of the script used to run program.",
     "train_gcn":      "Specify to train the GCN model.",
     "load_gcn":       "Specify to load the GCN model.",
+    "num_rows":       "Specify to select first N rows from the dataset.",
     "gcn_path":       "Specify the GCN model path - be it for loading from, or saving.",
     "epochs":         "Specify the number of epochs for the model to be trained.",
+    "test_size":      "Specify the percentage of samples used in test dataset (e.g. 0.2).",
     "learning_rate":  "Specify the learning rate used for training.",
     "gcn_embed_dims": "Specify the embedding dimensions in each layer of GCNConv.",
     "mlp_embed_dims": "Specify the embedding dimensions in each layer of MLP."
@@ -57,9 +59,9 @@ def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
         assert len(args.mlp_embed_dims) > 0, red("MLP layers number must be integer greater than 0.")
         for embed_dim in args.mlp_embed_dims:
             assert embed_dim > 0, red("MLP layer embedding dimension must be greater than 0.")
-
-        # First MLP layer handles 2 node representations, therefore its dimension is twice as big compared to GCN output's dimension
-        assert 2 * args.gcn_embed_dims[-1] == args.mlp_embed_dims[0], red(f"GCN output ({args.gcn_embed_dims[-1]}) and MLP input ({args.mlp_embed_dims[0]}) shape mismatch.")
+        
+        assert args.gcn_embed_dims[-1] == args.mlp_embed_dims[0], red("GCN layer and MLP layer dimension mismatch.")  
+        # assert args.mlp_embed_dims[-1] == 2, red("Final MLP layer must have 2 nodes, since there are 2 possible labels.")
 
     print_done("Arguments testing finished.")
 
@@ -84,9 +86,11 @@ def parse_args() -> argparse.Namespace:
     # Training environment arguments
     parser.add_argument("--train_gcn",      dest="train_gcn",     action="store_true",                            help=HELP["train_gcn"])
     parser.add_argument("--load_gcn",       dest="load_gcn",      action="store_true",                            help=HELP["load_gcn"])
+    parser.add_argument("--num_rows",       dest="num_rows",      action="store",      type=int,   default=1_000, help=HELP["num_rows"])
     parser.add_argument("--gcn_path",       dest="gcn_path",      action="store",      type=str,   default=None,  help=HELP["gcn_path"])
     parser.add_argument("--epochs",         dest="epochs",        action="store",      type=int,   default=5,     help=HELP["epochs"])
-    parser.add_argument("--learning_rate",  dest="learning_rate", action="store",      type=float, default=0.001, help=HELP["learning_rate"])
+    parser.add_argument("--learning_rate",  dest="learning_rate", action="store",      type=float, default=0.01, help=HELP["learning_rate"])
+    parser.add_argument("--test_size",      dest="test_size",     action="store",      type=float, default=0.5,   help=HELP["test_size"])
 
     # Model arguments
     parser.add_argument("--gcn_embed_dims", nargs="*", type=int, default=[1, 1], help=HELP["gcn_embed_dims"])

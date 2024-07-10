@@ -1,88 +1,85 @@
 import torch
 import torch.nn as nn
-from torch_geometric.utils import negative_sampling
-
-from sklearn.metrics import roc_auc_score
+from torch_geometric.loader import DataLoader
 
 import progressbar
 from utils.log import * # Colorful output
 
-def eval_gcn_model(gcn_model, features, data):
+def evaluate_model(gcn_model, loader):
     gcn_model.eval()
-    with torch.no_grad():
-        # Generate embeddings, then use them to make predictions for all the validation edges
-        node_embeds = gcn_model.encode(features, data.edge_index)
-        predictions = gcn_model.decode(node_embeds, data.edge_label_index).view(-1).sigmoid()
 
-        # Return standard ROC-AUC score
-        return roc_auc_score(data.edge_label.cpu().numpy(), predictions.cpu().numpy())
+    matches = 0
+    for data in loader: # Iterate in batches over the training/test dataset
+        # Make predictions and turn them into 0 - 1 labels, by taking the label with higher probability
+        predictions = gcn_model(data.x, data.edge_index, data.batch)  
+        predictions = predictions.round().int()
+
+        # Check predictions against ground-truth labels
+        matches += int((predictions == data.y).sum())
+
+    return (matches / len(loader.dataset))
 
 def train_gcn_model(gcn_model=None, 
                     data=None,
                     settings: dict=None):
 
     # Unpack data into respective datasets
-    train_data, val_data, test_data = data
+    train_data, test_data = data
     
     # Extract general training settings
     epochs, learning_rate, gcn_path, device = (settings[key] for key in settings)
 
     # Initialize a random initial embedding
-    train_data.x = torch.rand(gcn_model.num_nodes, gcn_model.gcn_embed_dims[0], 
-                              requires_grad=True).to(gcn_model.device)
+    for graph_data in train_data:
+        graph_data.x = torch.rand(graph_data.max_node, gcn_model.gcn_embed_dims[0], requires_grad=True).to(device)
+        graph_data.edge_index = graph_data.edge_index.to(device)
+        graph_data.y = graph_data.y.to(device)
 
-    # Port data to adequate device    
-    train_data = train_data.to(device)
-    val_data   = val_data.to(device)
-    test_data  = test_data.to(device)
+    for graph_data in test_data:
+        graph_data.x = torch.rand(graph_data.max_node, gcn_model.gcn_embed_dims[0], requires_grad=True).to(device)
+        graph_data.edge_index = graph_data.edge_index.to(device)
+        graph_data.y = graph_data.y.to(device)
+
+    # Creat data loaders with batches
+    train_loader = DataLoader(train_data, batch_size=16, shuffle=True)
+    test_loader  = DataLoader(test_data,  batch_size=16, shuffle=False)
 
     # Loss function and optimizer setup
-    criterion = nn.BCEWithLogitsLoss().to(device)
+    criterion = nn.BCELoss().to(device)
     optimizer = torch.optim.Adam(gcn_model.parameters(), lr=learning_rate)
     
-    with progressbar.ProgressBar(max_value=epochs, redirect_stdout=True) as bar:
-        for epoch in range(epochs):
-            gcn_model.train()
+    epoch_bar = progressbar.ProgressBar(max_value=epochs, widgets=[progressbar.Percentage(), ' ', progressbar.Bar(), ' ', progressbar.ETA()], redirect_stdout=True)
+    for epoch in range(epochs):
+        gcn_model.train()
+        
+        for data in train_loader:    
             optimizer.zero_grad()
             
-            # Retrieve the node embeddings for all the nodes present in the original graph
-            node_embeds = gcn_model.encode(train_data.x, train_data.edge_index)
+            # Infer the prediction by embedding the nodes and passing through MLP
+            prediction = gcn_model(data.x, data.edge_index, data.batch)
             
-            # Generate random negative edges
-            neg_edge_index = negative_sampling(edge_index=train_data.edge_index,
-                                               num_nodes=train_data.num_nodes,
-                                               num_neg_samples=train_data.edge_label_index.size(1), 
-                                               method="sparse")
-            
-            # Add newly generated negative edges into the training dataset
-            edge_label_index = torch.cat([train_data.edge_label_index, neg_edge_index],
-                                         dim=-1)
-            # Generate the labels for newly created negative edges - 0, as opposed to 1 for the positive edges
-            edge_label = torch.cat([train_data.edge_label,train_data.edge_label.new_zeros(neg_edge_index.size(1))], 
-                                   dim=0)
+            # Calculate the loss
+            loss = criterion(prediction, data.y.float())
+            print("Train loss:", loss.item())
 
-            # Generate predictions for both positive and negative edges, by passing them through MLP
-            predictions = gcn_model.decode(node_embeds, edge_label_index).view(-1)
-            loss        = criterion(predictions, edge_label)
-            
-            # Backpropagate
+            # Propagate backwards
             loss.backward()
             optimizer.step()
 
-            # Calculate Validation ROC-AUC and print it every 10th epoch
-            val_roc_auc = eval_gcn_model(gcn_model, train_data.x, val_data)
+        # Evaluate model on training and testing data after each epoch
+        train_acc = evaluate_model(gcn_model, train_loader)
+        test_acc  = evaluate_model(gcn_model, test_loader)
+        
+        # Print epoch summary
+        print_info(f"Epoch: {epoch + 1}/{epochs}. Train accuracy: {train_acc * 100: 0.4f}%. Test accuracy: {test_acc * 100: 0.4f}%")
+        
+        # Update outer progress bar
+        epoch_bar.update(epoch + 1)
 
-            if epoch % 10 == 0:
-                print(f"Epoch: {epoch:4d}. Train loss: {loss:.4f}. Validation ROC-AUC score: {val_roc_auc:.4f}")
-
-            # Update the progress bar
-            bar.update(epoch)
-
+    # Finish outer progress bar
+    epoch_bar.finish()
+            
     print_done("Model training has been finished.")
-
-    # Training is finished. Test the model on the test data.
-    test_auc = eval_gcn_model(gcn_model, train_data.x, test_data)
-    print_info(f"Test AUC: {test_auc:.2f}")
 
     # Save the model on disk
     print_info(f"Saving the model...")

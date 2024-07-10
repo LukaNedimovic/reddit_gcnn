@@ -1,28 +1,41 @@
-import networkx as nx
-
 import torch
-from torch_geometric.utils import from_networkx
 from torch_geometric       import seed_everything
+from torch_geometric.data  import Data
 
-from torch_geometric.transforms import RandomLinkSplit
+from datasets import load_dataset
 
-def load_data():
+def convert_to_graph_data(dataset):
+    data = []
+
+    for row in dataset:
+        iter_edge_index = row["edge_index"]
+        label           = row["y"]
+        
+        # Convert edges into meaningful node pairs
+        edge_pairs = [(edge_u, edge_v) for edge_u, edge_v in zip(iter_edge_index[0], iter_edge_index[1])]
+        
+        # Create an adequate pairing as torch tensor
+        edge_index = torch.tensor(edge_pairs, dtype=torch.long).t().contiguous()
+
+        # Create a Data object
+        graph_data = Data(edge_index=edge_index, y=torch.tensor([label]), max_node=edge_index.max().item() + 1)
+
+        # Add it to the complete dataset
+        data.append(graph_data)
+
+    return data
+
+def load_data(num_rows:  int=1_000,
+              test_size: float=0.5):
     seed_everything(42) # Random seed, for reproduction purposes
     
-    full_graph = nx.karate_club_graph()     # Load Zachary's Karate Club dataset, with node attributes  
-    graph      = nx.Graph(full_graph.edges) # Create graph with no node attributes
-    
-    data = from_networkx(graph) # Only store connectivity information
+    dataset = load_dataset("graphs-datasets/reddit_threads")
+    dataset = dataset["full"].select(range(num_rows)).train_test_split(test_size=test_size)
 
-    # Create a train-validation-test split
-    split_transform = RandomLinkSplit(num_val=0.1, 
-                                      num_test=.2,
-                                      is_undirected=True,
-                                      add_negative_train_samples=False,
-                                      neg_sampling_ratio=1.0)
-    train_data, val_data, test_data = split_transform(data)
-    
-    return (train_data, val_data, test_data)
+    train_data = convert_to_graph_data(dataset["train"])
+    test_data  = convert_to_graph_data(dataset["test"])
+
+    return (train_data, test_data)
 
 def load_gcn_model(gcn_model_path: str=None):
     return torch.load(gcn_model_path)

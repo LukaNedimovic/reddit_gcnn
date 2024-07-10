@@ -95,13 +95,14 @@ class GCNModel(nn.Module):
     def forward(self, X, edge_index, batch):
         # Infer embeddings
         X = self.gcn(X, edge_index)
+        X = X[torch.unique(edge_index)]        
         
         # Get the complete graph representation
         X = global_mean_pool(X, batch)
 
         # Infer the graph class
         X = dropout(X, p=0.3, training=self.training)
-        X = self.mlp(X)
+        X = self.mlp(X).view(-1)
 
         return X 
 

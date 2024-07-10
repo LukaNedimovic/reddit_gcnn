@@ -11,7 +11,7 @@ if __name__ == "__main__":
     args = parse_args()
     
     # Create classical Graph Convolutional Network model
-    gcn_model  = None
+    gcn_model = None
     
     # Create a new GCN model and train it within given setting
     if args.train_gcn:
@@ -21,7 +21,11 @@ if __name__ == "__main__":
 
         # Setup general model settings and create the model
         gcn_model_settings = {key: vars(args)[key] for key in GCN_MODEL_SETTINGS}
+        gcn_model_settings["num_nodes"] = data[2]
+         
         gcn_model = GCNModel(settings=gcn_model_settings)
+
+        print(gcn_model)
         
         # Setup training settings and start the model training
         training_settings           = {key: vars(args)[key] for key in TRAINING_SETTINGS}

@@ -1,5 +1,5 @@
 from termcolor import colored
-
+import csv
     
 def red(text: str=None) -> str:
     """
@@ -169,3 +169,8 @@ def log(header: str=None, text: str=None, color: str=None):
     color = COLOR_FUNCTIONS[color]
     
     print(color(f"[{header}]: {text}"))
+
+def write_model_training_data(out_file, data):
+    with open(out_file, "a") as csv_file:
+        writer = csv.writer(csv_file, delimiter=",")
+        writer.writerow(data)

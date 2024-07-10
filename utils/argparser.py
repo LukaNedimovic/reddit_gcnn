@@ -12,9 +12,10 @@ HELP = {
     "test_size":      "Specify the percentage of samples used in test dataset (e.g. 0.2).",
     "learning_rate":  "Specify the learning rate used for training.",
     "gcn_embed_dims": "Specify the embedding dimensions in each layer of GCNConv.",
+    "gcn_layer":      "Specify the convolution layer implemented within GCN.",
+    "gcn_act":        "Specify the activation function after each (except the last) layer in GCN.",
     "mlp_embed_dims": "Specify the embedding dimensions in each layer of MLP."
 }
-
 
 def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
     """
@@ -61,7 +62,6 @@ def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
             assert embed_dim > 0, red("MLP layer embedding dimension must be greater than 0.")
         
         assert args.gcn_embed_dims[-1] == args.mlp_embed_dims[0], red("GCN layer and MLP layer dimension mismatch.")  
-        # assert args.mlp_embed_dims[-1] == 2, red("Final MLP layer must have 2 nodes, since there are 2 possible labels.")
 
     print_done("Arguments testing finished.")
 
@@ -76,9 +76,8 @@ def parse_args() -> argparse.Namespace:
         Parsed arguments.
         Program will not procceed if any unknown argument is parsed.
     """
-    parser = argparse.ArgumentParser(prog="AI Project CHANGE THIS TODO: CHANGE",
-                                     description="Parses your arguments TODO: CHANGE",
-                                     epilog="Help TODO: CHANGE")
+    parser = argparse.ArgumentParser(prog="Reddit Thread - Discussion Binary Classifier",
+                                     description="Parses your arguments!")
 
     # General
     parser.add_argument("--script_name", dest="script_name", action="store", type=str, default=None, help=HELP["script_name"])
@@ -93,8 +92,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--test_size",      dest="test_size",     action="store",      type=float, default=0.5,   help=HELP["test_size"])
 
     # Model arguments
-    parser.add_argument("--gcn_embed_dims", nargs="*", type=int, default=[1, 1], help=HELP["gcn_embed_dims"])
-    parser.add_argument("--mlp_embed_dims", nargs="*", type=int, default=[1, 1], help=HELP["mlp_embed_dims"])
+    parser.add_argument("--gcn_embed_dims", nargs="*",        type=int, default=[1, 1],    help=HELP["gcn_embed_dims"])
+    parser.add_argument("--gcn_layer",      dest="gcn_layer", type=str, default="GCNConv", help=HELP["gcn_layer"])
+    parser.add_argument("--gcn_act",        dest="gcn_act",   type=str, default="ReLU",    help=HELP["gcn_act"])
+
+    parser.add_argument("--mlp_embed_dims", nargs="*",      type=int, default=[1, 1], help=HELP["mlp_embed_dims"])
 
     # Parse arguments
     args, unknown_args = parser.parse_known_args()

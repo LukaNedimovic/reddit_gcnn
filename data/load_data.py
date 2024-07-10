@@ -43,5 +43,5 @@ def load_data(num_rows:  int=1_000,
 
     return (train_data, test_data, max_node)
 
-def load_gcn_model(gcn_model_path: str=None):
+def load_gcn_model(gcn_model_path):
     return torch.load(gcn_model_path)

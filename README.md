@@ -10,7 +10,6 @@ This project uses <b>Graph Convolutional Neural Networks</b>, experimenting with
 GCN is used to learn node embeddings, which are shared among present graphs. For the simplicity of implementation, we resort ourselves to <code>1000</code> entries.
 
 <h2> 🚀 Quick Start </h2>
-<b>Table Editor</b> can be compiled and ran using provided <b>gradlew</b>:
 <pre>
 <code>git clone https://github.com/LukaNedimovic/pmf_exp_nn_1_proj.git
 cd pmf_exp_nn_1_proj

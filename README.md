@@ -47,4 +47,4 @@ pmf_exp_nn_1_proj
 
 
 <h2> 🔥 Train a Model </h2>
-To start the training process, run one of the scripts present in the <code>./scripts/train</code> folder.
+To start the training process, run one of the scripts present in the <code>./scripts/train/</code> folder.

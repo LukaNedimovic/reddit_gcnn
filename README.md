@@ -4,7 +4,7 @@
 Date of creation: <b>July, 2024</b>. <br/>
 
 <h2> ℹ️ General Information </h2>
-Reddit dataset used forms a graph of user interactions, out of which GCN needs to learn useful features and predict whether given interactions are part of a <b>discussion</b> (label <code>1</code>) or not (label <code>0</code>). 
+<a href="https://huggingface.co/datasets/graphs-datasets/reddit_threads"><b>Reddit threads dataset</b></a> used forms a graph of user interactions, out of which GCN needs to learn useful features and predict whether given interactions are part of a <b>discussion</b> (label <code>1</code>) or not (label <code>0</code>). 
 
 This project uses <b>Graph Convolutional Neural Networks</b>, experimenting with <code>pytorch_geometric</code> convolutional layers - <code>GCNConv</code> and <code>SAGEConv</code> layers, showcasing that, under similar hyperparameters (e.g. <b>embedding dimensions</b>) these two may produce similar results. We implement a straightforward structure - several layers of <b>graph convolution</b>, followed by several layers of <b>multi-layer perceptron</b>. The output of the MLP is passed through the sigmoid function to generate prediction in range <code>(0, 1)</code>.
 GCN is used to learn node embeddings, which are shared among present graphs. For the simplicity of implementation, we resort ourselves to <code>1000</code> entries.

@@ -30,9 +30,9 @@ pmf_exp_nn_1_proj
 │   ├── plot                # Plot train / test accuracies post-training
 │   ├── load                # Exemplary script that can be used to load a model
 │   ├── train               # Scripts used for training respective model architectures
-│   │   ├── gcn_l
+│   │   ├── gcn_s
 │   │   ├── gcn_m
-│   │   ├── gcn_s           
+│   │   ├── gcn_l           
 │   │   ├── sage_s
 │   │   ├── sage_m                 
 │   │   └── sage_l

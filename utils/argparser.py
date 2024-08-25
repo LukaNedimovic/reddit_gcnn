@@ -1,8 +1,9 @@
 import argparse    # Parsing arguments
-from .log import * # Colorful output
+from utils.log import * # Colorful output
 
 # Help texts, so the lines don't get too long
 HELP = {
+    # Parser - STD
     "script_name":    "Specify the name of the script used to run program.",
     "train_gcn":      "Specify to train the GCN model.",
     "load_gcn":       "Specify to load the GCN model.",
@@ -14,24 +15,17 @@ HELP = {
     "gcn_embed_dims": "Specify the embedding dimensions in each layer of GCNConv.",
     "gcn_layer":      "Specify the convolution layer implemented within GCN.",
     "gcn_act":        "Specify the activation function after each (except the last) layer in GCN.",
-    "mlp_embed_dims": "Specify the embedding dimensions in each layer of MLP."
+    "mlp_embed_dims": "Specify the embedding dimensions in each layer of MLP.",
+    # Parser - Plot
+    "csv_path":       "Path to csv file for plotting purposes.",
+    "data_id":        "Column where tuples of form (x, y) are stored.",
+    "x_label":        "Label of the x-axis.",
+    "y_label":        "Label of the y-axis.",
+    "prefix":         "Prefix of the plot's filename."
 }
 
-def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
-    """
-    Test passed cmdline arguments using assertions.
-    If everything is alright, program continues as planned. 
-    If not, program stops upon assertion error.
-    
-    Parameters
-    ----------
-    args : argparse.Namespace
-        Known parsed arguments.
-        
-    unknown_args: argparse.Namespace
-        Unknown parsed arguments.
-    
-    """
+def test_std(args: argparse.Namespace, unknown_args: argparse.Namespace):
+    """ Test standard parser arguments """
     
     print_info("Starting argument testing.")
     
@@ -66,17 +60,26 @@ def test(args: argparse.Namespace, unknown_args: argparse.Namespace):
     print_done("Arguments testing finished.")
 
 
-def parse_args() -> argparse.Namespace:
-    """
-    Parses cmdline arguments and returns them to the main function.
+def parse_plot():
+    """ Setup argparser for plotting purposes """
     
-    Returns
-    -------
-    args : argparse.Namespace
-        Parsed arguments.
-        Program will not procceed if any unknown argument is parsed.
-    """
-    parser = argparse.ArgumentParser(prog="Reddit Thread - Discussion Binary Classifier",
+    parser = argparse.ArgumentParser(prog="Plot Parser",
+                                     description="Parses your arguments!")
+    
+    # Plotting arguments
+    parser.add_argument("--csv_path", dest="csv_path", action="store", type=str, default=None, help=HELP["csv_path"])
+    parser.add_argument("--data_id",  dest="data_id",  action="store", type=str, default=None, help=HELP["data_id"])
+    parser.add_argument("--x_label",  dest="x_label",  action="store", type=str, default=None, help=HELP["x_label"])
+    parser.add_argument("--y_label",  dest="y_label",  action="store", type=str, default=None, help=HELP["y_label"])
+    parser.add_argument("--prefix",   dest="prefix",   action="store", type=str, default=None, help=HELP["prefix"])
+
+    return parser
+
+
+def parse_std():
+    """ Setup a standard argparser (i.e. for training / inference purposes) """
+
+    parser = argparse.ArgumentParser(prog="Standard Parser",
                                      description="Parses your arguments!")
 
     # General
@@ -95,19 +98,37 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gcn_embed_dims", nargs="*",        type=int, default=[1, 1],    help=HELP["gcn_embed_dims"])
     parser.add_argument("--gcn_layer",      dest="gcn_layer", type=str, default="GCNConv", help=HELP["gcn_layer"])
     parser.add_argument("--gcn_act",        dest="gcn_act",   type=str, default="ReLU",    help=HELP["gcn_act"])
+    
+    parser.add_argument("--mlp_embed_dims", nargs="*",        type=int, default=[1, 1],      help=HELP["mlp_embed_dims"])
 
-    parser.add_argument("--mlp_embed_dims", nargs="*",      type=int, default=[1, 1], help=HELP["mlp_embed_dims"])
+    return parser
+
+
+PARSER_MAPPING = {
+    "std":  (parse_std,  test_std),
+    "plot": (parse_plot, None)
+}
+
+def parse_args(parser_id: str="std") -> argparse.Namespace:
+    """ Parses cmdline arguments and returns them. """
+    
+    assert parser_id in PARSER_MAPPING, red(f"Invalid parser_id ({parser_id}) provided.")
+    setup, test = PARSER_MAPPING[parser_id]
+
+    # Set up the adequate parser
+    parser = setup()
 
     # Parse arguments
     args, unknown_args = parser.parse_known_args()
     
     # Assure the user passed arguments properly
-    test(args, unknown_args)
+    if test is not None:
+        test(args, unknown_args)
     
     print_done("Arguments loaded.")
     
     # In case of script use, log it
-    if args.script_name is not None:
+    if "script_name" in vars(args) and args.script_name is not None:
         print_info(f"This program has been run using following script: {args.script_name}")
     
     # Returns passed arguments

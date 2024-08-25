@@ -8,6 +8,7 @@ from torch_geometric.nn import global_mean_pool
 from utils.log import *
 from utils.const import GCN_MODEL_SETTINGS, CONV_LAYERS_MAPPING, ACTIVATION_FUNCTIONS_MAPPING
 
+
 class GCN(nn.Module):
     def __init__(self, 
                  num_nodes:  int=None,
@@ -58,6 +59,7 @@ class GCN(nn.Module):
     def is_convolution(self, layer):
         return isinstance(layer, GCNConv) or isinstance(layer, SAGEConv)
 
+
 class MLP(nn.Module):
     def __init__(self, 
                  embed_dims: list=[1, 1]):
@@ -81,6 +83,7 @@ class MLP(nn.Module):
 
     def forward(self, X):
         return self.mlp(X).sigmoid()
+
 
 class GCNModel(nn.Module):
     def __init__(self, settings):

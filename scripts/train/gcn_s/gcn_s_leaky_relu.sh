@@ -1,16 +1,14 @@
 #!/bin/bash
 
 # Go to parent directory 
-cd ..
-cd ..
-cd ..
+cd $PROJECT_DIR
 
 # Execute the script
 python3 main.py \
 --script_name "$0" \
 --train_gcn \
 --num_rows 1000 \
---gcn_path "./models/gcn_s_leaky_relu.pth" \
+--gcn_path "$MODEL_CACHE_DIR/gcn_s_leaky_relu.pth" \
 --gcn_embed_dims 16 8 4 \
 --gcn_layer "GCNConv" \
 --gcn_act "leaky_relu" \

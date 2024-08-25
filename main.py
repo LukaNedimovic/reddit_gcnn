@@ -6,9 +6,10 @@ from model.gcn_model import GCNModel
 from train.trainer import *
 from data.load_data import load_data, load_gcn_model
 
+
 if __name__ == "__main__":
     # Parse arguments from command line
-    args = parse_args()
+    args = parse_args("std")
     
     # Create classical Graph Convolutional Network model
     gcn_model = None

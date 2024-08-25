@@ -1,5 +1,5 @@
 # Go to parent directory, where `requirements.txt` is
-cd .. 
+cd $PROJECT_DIR
 
 # Print everything into the file
 pip freeze > requirements.txt

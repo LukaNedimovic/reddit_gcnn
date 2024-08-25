@@ -1,14 +1,14 @@
+#!/bin/bash
+
 # Go to parent directory 
-cd ..
-cd ..
-cd ..
+cd $PROJECT_DIR
 
 # Execute the script
 python3 main.py \
 --script_name "$0" \
 --train_gcn \
 --num_rows 1000 \
---gcn_path "./models/gcn_m_sigmoid.pth" \
+--gcn_path "$MODEL_CACHE_DIR/gcn_m_sigmoid.pth" \
 --gcn_embed_dims 256 128 128 128 64 \
 --gcn_layer "GCNConv" \
 --gcn_act "sigmoid" \

@@ -11,37 +11,41 @@ GCN is used to learn node embeddings, which are shared among present graphs. For
 
 <h2> 🚀 Quick Start </h2>
 <pre>
-<code>git clone https://github.com/LukaNedimovic/pmf_exp_nn_1_proj.git
-cd pmf_exp_nn_1_proj
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt</code></pre>
+<code>git clone https://github.com/LukaNedimovic/reddit_gcnn.git
+cd reddit_gcnn
+source ./setup.sh</code></pre>
 
 <h2> 📁 Folder Tree </h2>
 <pre>
   <code>
 pmf_exp_nn_1_proj  
-├── data                    
-│   ├── load_data.py        # Load Reddit dataset
-│   └── training_data.csv   # General data collected after training
-├── main.py                 # Training starts here                 
+├── data
+│   ├── plots               # Grouped and separated accuracy plots                 
+│   ├── load_data.py        # Load Reddit dataset
+│   └── training_data.csv   # General data collected after training
 ├── model
-│   └── gcn_model.py        # General implementation of Graph Convolutional Network model
+│   └── gcn_model.py        # General implementation of Graph Convolutional Network model
 ├── README.md               # You are reading this!                          
 ├── scripts
+│   ├── plot                # Plot train / test accuracies post-training
 │   ├── load                # Exemplary script that can be used to load a model
-│   ├── train               # Scripts used for training respective model architectures
-│   │   ├── gcn_l
-│   │   ├── gcn_m
-│   │   ├── gcn_s           
-│   │   └── sage_l           
-│   └── update_req.sh       # Update requirements after changes
+│   ├── train               # Scripts used for training respective model architectures
+│   │   ├── gcn_l
+│   │   ├── gcn_m
+│   │   ├── gcn_s           
+│   │   ├── sage_s
+│   │   ├── sage_m                 
+│   │   └── sage_l
+│   └── update_req.sh       # Update requirements after changes
 ├── train
-│   └── trainer.py          # File containing training method and configuration
-└── utils                   # Generally useful functionalities
-    ├── argparser.py        # Parse cmdline arguments
-    ├── const.py            # Constants useful throughout training process
-    └── log.py              # Making output look pleasant
+│   └── trainer.py          # File containing training method and configuration
+├── utils                   # Generally useful functionalities
+│    ├── argparser.py       # Parse cmdline arguments
+│    ├── const.py           # Constants useful throughout training process
+│    ├── plot.py            # Plot nice matplotlib graphs
+│    └── log.py             # Making output look pleasant
+├── main.py                 # Training starts here                 
+└── setup.py                # Set up the environment
   </code>
 </pre>
 

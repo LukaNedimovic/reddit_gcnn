@@ -1,14 +1,14 @@
+#!/bin/bash
+
 # Go to parent directory 
-cd ..
-cd ..
-cd ..
+cd $PROJECT_DIR
 
 # Execute the script
 python3 main.py \
 --script_name "$0" \
 --train_gcn \
 --num_rows 1000 \
---gcn_path "./models/gcn_l_tanh.pth" \
+--gcn_path "$MODEL_CACHE_DIR/gcn_l_tanh.pth" \
 --gcn_embed_dims 2048 2048 2048 2048 1024 1024 512 \
 --gcn_layer "GCNConv" \
 --gcn_act "tanh" \

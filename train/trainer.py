@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch_geometric.loader import DataLoader
-from itertools import chain
+import os
 
 import progressbar
 from utils.log import * # Colorful output
@@ -87,17 +87,20 @@ def train_gcn_model(gcn_model=None,
     print_done("Model training has been finished. ")
     print_info(f"Trained for {epochs} epochs. Train accuracy: {train_accs[-1][1] * 100: 0.2f}%. Test accuracy: {test_accs[-1][1] * 100: 0.2f}%")
 
-    training_data = [gcn_path, 
+    gcn_model_name = os.path.splitext(os.path.basename(gcn_path))[0]
+
+    training_data = [gcn_model_name, 
                      gcn_model.gcn_embed_dims, 
                      gcn_model.gcn_layer,
-                     gcn_model.gcn_act, 
+                     gcn_model.gcn_act,
                      gcn_model.mlp_embed_dims,
                      learning_rate,
                      epochs,
                      train_accs,
                      test_accs]
     
-    write_model_training_data("./data/training_data.csv", training_data)
+    training_data_path = os.path.expandvars("$DATA_DIR/training_data.csv")
+    write_model_training_data(training_data_path, training_data)
 
     # Save the model on disk
     print_info(f"Saving the model...")

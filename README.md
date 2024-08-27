@@ -2,7 +2,7 @@
 
 <b>Reddit GCNN</b> is a project created for the course <b>"Experiments with Neural Networks 1"</b> (Faculty of Sciences, University of Novi Sad) <br/>
 <b>Date of creation:</b> July, 2024. <br/>
-<b>Read the paper here:</b> <a href="https://github.com/LukaNedimovic/reddit_gcnn/blob/main/Reddit%20GCNN%20%20Implementation%20of%20Graph%20Convolutional%20Neural%20Networks%20in%20Graph%20Classification%20problem.pdf"> "Reddit GCNN - Implementation of Graph Convolutional Neural Networks in Graph Classification problem" Paper </a>
+<b>Read the paper here:</b> <a href="https://github.com/LukaNedimovic/reddit_gcnn/blob/0c4d73b50dd5fe266eb89b666e67058108df67f9/Reddit%20GCNN%20-%20Implementation%20of%20Graph%20Convolutional%20Neural%20Networks%20in%20Graph%20Classification%20problem.pdf"> "Reddit GCNN - Implementation of Graph Convolutional Neural Networks in Graph Classification problem" Paper </a>
 
 <h2> ℹ️ General Information </h2>
 <a href="https://huggingface.co/datasets/graphs-datasets/reddit_threads"><b>Reddit threads dataset</b></a> used forms a graph of user interactions, out of which GCN needs to learn useful features and predict whether given interactions are part of a <b>discussion</b> (label <code>1</code>) or not (label <code>0</code>). 

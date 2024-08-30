@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -e
+
 echo "Starting environment setup."
 
 # Export environment variables (for the sake of scripts)
